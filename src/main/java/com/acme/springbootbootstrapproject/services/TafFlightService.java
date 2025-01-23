@@ -7,7 +7,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-
+import org.springframework.beans.factory.annotation.Value;
+import java.net.URI;
 import java.util.List;
 import java.util.Optional;
 
@@ -17,13 +18,14 @@ public class TafFlightService {
     @Autowired
     private RestTemplate restTemplate;
 
-    private final String BASE_URL = "http://localhost:9200/datastore";
+    @Value("${datastore.url}")
+    private String BASE_URL;
 
     // Retrieve all flights
     public List<Flights> getAllFlights() {
         String url = BASE_URL + "/flights";
 
-        ResponseEntity<List<Flights>> response = restTemplate.exchange(url,
+        ResponseEntity<List<Flights>> response = restTemplate.exchange(URI.create(url),
                 org.springframework.http.HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<List<Flights>>() {});
@@ -35,7 +37,7 @@ public class TafFlightService {
     public Optional<Flights> getFlightById(Long flightId) {
         String url = BASE_URL + "/flights/" + flightId;
 
-        ResponseEntity<Flights> response = restTemplate.exchange(url,
+        ResponseEntity<Flights> response = restTemplate.exchange(URI.create(url),
                 org.springframework.http.HttpMethod.GET,
                 null,
                 new ParameterizedTypeReference<Flights>() {});
@@ -54,7 +56,7 @@ public class TafFlightService {
         // Create the HTTP entity with user object and headers
         HttpEntity<Flights> entity = new HttpEntity<>(flight, headers);
 
-        ResponseEntity<Flights> response = restTemplate.exchange(url,
+        ResponseEntity<Flights> response = restTemplate.exchange(URI.create(url),
                 org.springframework.http.HttpMethod.POST,
                 entity,
                 Flights.class);
@@ -73,7 +75,7 @@ public class TafFlightService {
         // Create the HTTP entity with user object and headers
         HttpEntity<Flights> entity = new HttpEntity<>(updatedFlight, headers);
 
-        ResponseEntity<Flights> response = restTemplate.exchange(url,
+        ResponseEntity<Flights> response = restTemplate.exchange(URI.create(url),
                 org.springframework.http.HttpMethod.PUT,
                 entity,
                 Flights.class);
@@ -85,7 +87,7 @@ public class TafFlightService {
     public void deleteFlight(Long flightId) {
         String url = BASE_URL + "/flights/" + flightId;
 
-        ResponseEntity<Flights> response = restTemplate.exchange(url,
+        ResponseEntity<Flights> response = restTemplate.exchange(URI.create(url),
                 org.springframework.http.HttpMethod.DELETE,
                 null,
                 Flights.class);
